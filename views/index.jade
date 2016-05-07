@@ -1,0 +1,94 @@
+extends layout
+
+block content
+  div.container
+      div.btn-face
+        a.login(onclick="Logar()")
+          i.fa-2x.fa.fa-facebook-square
+          span.texto Efetuar Login com o facebook
+      div(id="status")
+
+block scripts
+  script.
+    function callbackMudancaStatus(response){
+        // O objeto de resposta é retornado com o campo de status
+        //que faz com que o aplicativo saiba o status de login do usuario
+        if(response.status === 'connected'){
+            //caso o usuario esteja logado, execute minha api
+            //trazendo as informações dele
+            $('.login').hide().fadeOut(1000);
+            $('#status').append('<a onclick="LogarOff()" style="cursor:pointer"> Sair </a>');
+            testAPI();
+        }else if(response.status === 'not_authorized'){
+            //caso estiver logada no face , mas não na pagina
+            $('#status').html('<p>Por favor, faça login na pagina</p>');
+        }else{
+            //não esta logado nem no face e nem na pagina
+            //logo é impossivel trazer as informações
+            //- $('#status').html('<p>Por favor faça login no facebook</p>');
+        }
+    }
+    //facebookInicializaçãoAssincrona
+    //significa que esta é a função de inicializaçao da API
+    //Isso é o que carrega quando se entra nesta pagina
+    window.fbAsyncInit = function(){
+      //inicia a Api do face
+      FB.init({
+          //A sua ID de desenvolvedor
+          appId:'887973411331988',
+          //Permitr cookie ,  é necessario que ele permita
+          //para criar os cookies de conexões dos usuarios
+          cookie:true,
+          //da permissão para usar os plugins do face ,como por exempo
+          //o botão de login que esta na documentação
+          //você não é obrigado a chamar esse atributo
+          xfbml:true,
+          //por ultimo a versão da API
+          version: 'v2.5' //sem isso a api não funciona
+      });
+
+      FB.getLoginStatus(function(response){
+          //A resposta do getLoginStatus vai ser
+          //a função de callback que fizemos no começo
+          //feito isso ele faz a verificação de conexão com o facebook
+          //e caso haja conexão , ele executa o testAPI()
+          callbackMudancaStatus(response);
+      });
+    };
+    //Codigo do facebook para inicialização do 
+    //JavaScript SDK
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+    
+    //Função de inicializar a API
+    function testAPI(){
+      //- URL de onde quer trazer os dados
+      //- /me no caso seria /eu <- o usuario que esta fazendo
+      //- o login
+      //logo depois ele traz os dados na variavel response
+      FB.api('/me' , function(response){
+        $('#status').append('<p>Olá '+response.name+' , Seja bem vindo </p>');
+        console.log(response);
+      });
+    }
+    
+    //fucao do botao de login
+    function Logar(){
+      //funcao do face login
+      FB.login(function(response){
+        callbackMudancaStatus(response);
+      });
+    }
+    //função botao de Logoff
+    function LogarOff(){
+      //funcao do face de logoff
+      FB.logout(function(response){
+        callbackMudancaStatus(response);
+        $('#status').html('<p>Fez Logoff</p>')
+      });
+    }

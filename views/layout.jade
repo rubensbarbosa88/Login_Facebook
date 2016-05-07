@@ -1,0 +1,18 @@
+doctype html
+html(ng-app="LoginFace")
+  head
+    title= title
+    link(rel="stylesheet", href="/bower/bootstrap/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/bower/font-awesome/css/font-awesome.min.css")
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body(ng-controller="faceLoginCtrl")
+    div.container
+        h1= title
+        br     
+    block content    
+    script(src="/bower/jquery/jquery.min.js")
+    script(src="/bower/angular/angular.min.js")
+    script(src="/bower/bootstrap/js/bootstrap.min.js")
+    script(src="/javascripts/main.js")
+    script(src="/javascripts/ctrl.js")
+    block scripts
